@@ -10,7 +10,7 @@ RUN yarn install
 
 COPY . .
 
-ENV NODE_ENV=dev
+ENV NODE_ENV=development
 
 EXPOSE 3000
 
