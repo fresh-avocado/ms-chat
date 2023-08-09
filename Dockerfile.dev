@@ -2,14 +2,16 @@ FROM node:18
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json .
 
-COPY yarn.lock ./
+COPY yarn.lock .
 
 RUN yarn install
 
 COPY . .
 
-RUN yarn build
+ENV NODE_ENV=dev
 
-CMD [ "node", "dist/main.js" ]
+EXPOSE 3000
+
+CMD ["yarn", "start:dev"]
