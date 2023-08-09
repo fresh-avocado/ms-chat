@@ -7,6 +7,7 @@ export class AppService {
 
   getHello(): string {
     console.log(this.configService.get<string>('POSTGRES_HOST'));
+    console.log(this.configService.get<string>('POSTGRES_USER'));
 
     return 'Hello World!';
   }
