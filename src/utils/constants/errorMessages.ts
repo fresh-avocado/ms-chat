@@ -1,0 +1,10 @@
+export const WRONG_EMAIL_OR_PASSWORD = 'Wrong email or password';
+export const NOT_SIGNED_IN = 'You need to log sign in';
+export const MALFORMED_SESSION_COOKIE = 'Malformed session cookie';
+export const UNAUTHORIZED = 'Unauthorized';
+export const CREATE_SESSION_ERROR = 'Could not create session';
+export const GET_SESSION_ERROR = 'Could not retrieve session';
+export const GET_USERS_ERROR = 'Could get users';
+export const GET_USER_ERROR = 'Could get user';
+export const CREATE_USER_ERROR = 'Could not create user';
+export const NON_EXISTENT_USER_ERROR = 'User does not exist';
