@@ -30,6 +30,8 @@ export class AuthGuard implements CanActivate {
 
     const signedCookieValue = req.cookies['sessionId'];
 
+    console.log('signed Cookie value: ', signedCookieValue);
+
     if (signedCookieValue === null || signedCookieValue === undefined) {
       throw new HttpException({ msg: NOT_SIGNED_IN }, HttpStatus.UNAUTHORIZED);
     }

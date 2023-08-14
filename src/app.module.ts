@@ -7,6 +7,7 @@ import { ChatDirectoryModule } from './chat-directory/chat-directory.module';
 import { RedisModule } from './redis/redis.module';
 import { UsersModule } from './users/users.module';
 import { IsOnRoadEmail } from './chat-directory/decorators/isOnRoadEmail.decorator';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { IsOnRoadEmail } from './chat-directory/decorators/isOnRoadEmail.decorat
     ChatDirectoryModule,
     RedisModule,
     UsersModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService, IsOnRoadEmail],
