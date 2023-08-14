@@ -16,6 +16,11 @@ import { stringifyError } from 'src/utils/stringifyError';
     injectar RedisService a una función. Si ustedes saben, me encantaría
     saberlo. Por ello, tuve que establecer la conexión dos veces. Sé que
     no es una buena práctica, pero en mi caso no tuve otra opción.
+
+    Por otro lado, esto es mejor dado que el socket que mantiene la conexión
+    con Redis ya no se va a abrumar: la carga se distribuirá. Algo así como
+    mantener un 'connection pool' a un BD en vez de una sola conexión. No sé
+    si Redis hace eso por debajo. En dicho caso, no hay 'performance gain' entonces.
 */
 
 const logger = new Logger('verifyWsConnection');

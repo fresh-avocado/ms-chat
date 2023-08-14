@@ -1,16 +1,17 @@
 import { Logger } from '@nestjs/common';
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { verifyWsConnection } from './utils/verifyWsConnection';
-import { ClientSession } from 'typeorm';
+import { ChatDirectoryService } from 'src/chat-directory/chat-directory.service';
+import { ClientSession } from 'src/redis/types/session.type';
+import { AddMessageDto } from 'src/chat-directory/dtos/add-message.dto';
+import { EditMessageDto } from 'src/chat-directory/dtos/edit-message.dto';
+import { DeleteMessageDto } from 'src/chat-directory/dtos/delete-message.dto';
 
 @WebSocketGateway({
   cors: {
@@ -21,25 +22,65 @@ import { ClientSession } from 'typeorm';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ChatGateway.name);
 
-  constructor() { }
+  constructor(private readonly chatDirectoryService: ChatDirectoryService) { }
 
   @WebSocketServer()
   server: Server;
 
   async handleConnection(socket: Socket) {
-    const session = socket.request['session'] as ClientSession;
-    this.logger.log(`session: ${JSON.stringify(session, null, 2)}`);
-    // const session = await this.redisService.getSession(cookieStr.value);
+    const clientSession = socket.request['session'] as ClientSession;
+    const chats = await this.chatDirectoryService.getChats(
+      clientSession.userEmail,
+    );
+    chats.forEach((chat) => {
+      this.logger.log(`${clientSession.userEmail} joined room ${chat.chatId}`);
+      socket.join(chat.chatId);
+    });
+    socket.on('msg', (dto) => this.handleMessage(dto, clientSession, socket));
+    socket.on('edit', (dto) => this.handleEdit(dto, clientSession, socket));
+    socket.on('delete', (dto) => this.handleDelete(dto, clientSession, socket));
   }
 
   handleDisconnect() {
     this.logger.warn(`client disconneted`);
   }
 
-  @SubscribeMessage('msg')
-  findAll(@MessageBody() data: any): Promise<WsResponse<any>> {
-    this.logger.log(`data: ${JSON.stringify(data, null, 2)}`);
-    this.server.emit('oh yes oh yes', 'said carl cox');
-    return data;
+  // ya que hemos validado la conexión, no tenemos que validar
+  // cada evento, podemos confiar en la conexión. si tuvieramos que
+  // validar cada evento, eso implicaría un request a Redis por evento
+  // lo cual haría del chat más lento
+
+  // estamos autenticados: el usuario conectado es de tipo ONROAD
+  // por lo tanto, decidiré no validar cada payload de cada evento
+  // dado que es un chat y debe ser rápido
+
+  async handleMessage(
+    dto: AddMessageDto,
+    session: ClientSession,
+    socket: Socket,
+  ): Promise<void> {
+    await this.chatDirectoryService.addMessage(dto, session);
+    socket.broadcast.to(dto.chatId).emit('friendMsg', dto);
+    return;
+  }
+
+  async handleEdit(
+    dto: EditMessageDto,
+    session: ClientSession,
+    socket: Socket,
+  ): Promise<void> {
+    await this.chatDirectoryService.editMessage(dto, session);
+    socket.broadcast.to(dto.chatId).emit('friendEdit', dto);
+    return;
+  }
+
+  async handleDelete(
+    dto: DeleteMessageDto,
+    session: ClientSession,
+    socket: Socket,
+  ): Promise<void> {
+    await this.chatDirectoryService.deleteMessage(dto, session);
+    socket.broadcast.to(dto.chatId).emit('friendDelete', dto);
+    return;
   }
 }
