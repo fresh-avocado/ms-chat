@@ -3,9 +3,8 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketGateway,
-  WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { verifyWsConnection } from './utils/verifyWsConnection';
 import { ChatDirectoryService } from 'src/chat-directory/chat-directory.service';
 import { ClientSession } from 'src/redis/types/session.type';
@@ -23,9 +22,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ChatGateway.name);
 
   constructor(private readonly chatDirectoryService: ChatDirectoryService) { }
-
-  @WebSocketServer()
-  server: Server;
 
   async handleConnection(socket: Socket) {
     const clientSession = socket.request['session'] as ClientSession;

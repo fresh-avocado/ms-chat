@@ -57,15 +57,7 @@ export const verifyWsConnection = async (
       fn('No cookie header present', false);
       return;
     }
-    const cookieValue = req.rawHeaders[idx + 1];
-    const cookies = cookieValue.split('; ');
-    let sessionCookieValue: string = '';
-    for (let i = 0; i < cookies.length; i++) {
-      if (cookies[i].includes('sessionId')) {
-        sessionCookieValue = cookies[i].split('=')[1];
-        break;
-      }
-    }
+    const sessionCookieValue = extractCookieValue(req.rawHeaders[idx + 1]);
     const unsignedCookie = signer.unsign(unescape(sessionCookieValue));
     if (!unsignedCookie.valid) {
       logger.error('Malformed cookie');
@@ -92,4 +84,16 @@ export const verifyWsConnection = async (
     logger.error(`${stringifyError(error)}`);
     fn('An error occurred', false);
   }
+};
+
+const extractCookieValue = (cookieString: string): string => {
+  const cookies = cookieString.split('; ');
+  let sessionCookieValue: string = '';
+  for (let i = 0; i < cookies.length; i++) {
+    if (cookies[i].includes('sessionId')) {
+      sessionCookieValue = cookies[i].split('=')[1];
+      break;
+    }
+  }
+  return sessionCookieValue;
 };
