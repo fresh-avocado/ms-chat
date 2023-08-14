@@ -69,15 +69,21 @@ export class ChatDirectoryController {
   @UseGuards(AuthGuard)
   @Put('/editMessage')
   @UsePipes(ValidationPipe)
-  async editMessage(@Body() dto: EditMessageDto) {
-    return await this.chatDirectoryService.editMessage(dto);
+  async editMessage(
+    @Body() dto: EditMessageDto,
+    @Req() req: FastifyRequest & { sessionId: string; session: ClientSession },
+  ) {
+    return await this.chatDirectoryService.editMessage(dto, req.session);
   }
 
   @AllowedUserType('onroad')
   @UseGuards(AuthGuard)
   @Delete('/deleteMessage')
   @UsePipes(ValidationPipe)
-  async deleteMessage(@Body() dto: DeleteMessageDto) {
-    return await this.chatDirectoryService.deleteMessage(dto);
+  async deleteMessage(
+    @Body() dto: DeleteMessageDto,
+    @Req() req: FastifyRequest & { sessionId: string; session: ClientSession },
+  ) {
+    return await this.chatDirectoryService.deleteMessage(dto, req.session);
   }
 }

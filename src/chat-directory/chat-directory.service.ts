@@ -88,7 +88,7 @@ export class ChatDirectoryService {
         CREATE TABLE ${newTableName} (
           id UUID NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
           message TEXT NOT NULL,
-          userId UUID NOT NULL,
+          authorEmail TEXT NOT NULL,
           createdAt TIMESTAMP NOT NULL DEFAULT current_timestamp,
           edited BOOLEAN NOT NULL DEFAULT FALSE,
           deleted BOOLEAN NOT NULL DEFAULT FALSE
@@ -144,8 +144,8 @@ export class ChatDirectoryService {
   async addMessage(dto: AddMessageDto) {
     try {
       await this.chatDirectoryRepository.query(
-        `INSERT INTO chat_${dto.chatId} (message, userId) VALUES ($1, $2)`,
-        [dto.message, dto.userId],
+        `INSERT INTO chat_${dto.chatId} (message, authorEmail) VALUES ($1, $2)`,
+        [dto.message, dto.authorEmail],
       );
     } catch (error) {
       this.logger.error(`could not add message: ${stringifyError(error)}`);
@@ -156,12 +156,11 @@ export class ChatDirectoryService {
     }
   }
 
-  async editMessage(dto: EditMessageDto) {
+  async editMessage(dto: EditMessageDto, session: ClientSession) {
     try {
-      // TODO: ensure the message is mine cuando authorEmail
       const [, affectedRows] = await this.chatDirectoryRepository.query(
-        `UPDATE chat_${dto.chatId} SET message = $1, edited = TRUE WHERE id = $2`,
-        [dto.newMessage, dto.messageId],
+        `UPDATE chat_${dto.chatId} SET message = $1, edited = TRUE WHERE id = $2 AND authorEmail = $3`,
+        [dto.newMessage, dto.messageId, session.userEmail],
       );
       if (affectedRows === 0) {
         throw new Error('message does not exist');
@@ -175,13 +174,11 @@ export class ChatDirectoryService {
     }
   }
 
-  async deleteMessage(dto: DeleteMessageDto) {
-    // TODO: delete message and set deleted flag
+  async deleteMessage(dto: DeleteMessageDto, session: ClientSession) {
     try {
-      // TODO: ensure the message is mine cuando authorEmail
       const [, affectedRows] = await this.chatDirectoryRepository.query(
-        `UPDATE chat_${dto.chatId} SET message = '', deleted = TRUE WHERE id = $1`,
-        [dto.messageId],
+        `UPDATE chat_${dto.chatId} SET message = '', deleted = TRUE WHERE id = $1 AND authorEmail = $2`,
+        [dto.messageId, session.userEmail],
       );
       if (affectedRows === 0) {
         throw new Error('message does not exist');

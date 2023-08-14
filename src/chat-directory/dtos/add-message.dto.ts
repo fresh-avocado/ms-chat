@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsString, IsUUID, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { CHAT_UUID_REGEX } from 'src/utils/constants/chatUUIDRegex';
 
 export class AddMessageDto {
@@ -8,8 +13,8 @@ export class AddMessageDto {
   })
   chatId: string;
 
-  @IsUUID()
-  userId: string;
+  @IsEmail()
+  authorEmail: string;
 
   @IsString()
   @IsNotEmpty()
