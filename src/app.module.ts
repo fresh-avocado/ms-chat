@@ -3,6 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatDirectoryModule } from './chat-directory/chat-directory.module';
+import { RedisModule } from './redis/redis.module';
+import { UsersModule } from './users/users.module';
+import { IsOnRoadEmail } from './chat-directory/decorators/isOnRoadEmail.decorator';
 
 @Module({
   imports: [
@@ -22,12 +26,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           database: configService.get('POSTGRES_DATABASE'),
           entities: [],
           synchronize: true,
+          logging: true,
+          autoLoadEntities: true,
         };
       },
       inject: [ConfigService],
     }),
+    ChatDirectoryModule,
+    RedisModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, IsOnRoadEmail],
 })
-export class AppModule { }
+export class AppModule {}

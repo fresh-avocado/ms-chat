@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
-  constructor(private configService: ConfigService) { }
+  constructor() {}
 
   getHello(): string {
-    console.log(this.configService.get<string>('POSTGRES_HOST'));
-    console.log(this.configService.get<string>('POSTGRES_USER'));
-
     return 'Hello World!';
   }
 }
