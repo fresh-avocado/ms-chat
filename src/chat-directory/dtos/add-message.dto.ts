@@ -1,9 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Matches,
-} from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 import { CHAT_UUID_REGEX } from 'src/utils/constants/chatUUIDRegex';
 
 export class AddMessageDto {
@@ -12,9 +7,6 @@ export class AddMessageDto {
     message: 'That is not a valid UUID',
   })
   chatId: string;
-
-  @IsEmail()
-  authorEmail: string;
 
   @IsString()
   @IsNotEmpty()

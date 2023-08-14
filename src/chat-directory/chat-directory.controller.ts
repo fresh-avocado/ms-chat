@@ -61,8 +61,11 @@ export class ChatDirectoryController {
   @UseGuards(AuthGuard)
   @Post('/addMessage')
   @UsePipes(ValidationPipe)
-  async addMessage(@Body() dto: AddMessageDto) {
-    return await this.chatDirectoryService.addMessage(dto);
+  async addMessage(
+    @Body() dto: AddMessageDto,
+    @Req() req: FastifyRequest & { sessionId: string; session: ClientSession },
+  ) {
+    return await this.chatDirectoryService.addMessage(dto, req.session);
   }
 
   @AllowedUserType('onroad')

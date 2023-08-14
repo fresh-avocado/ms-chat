@@ -141,11 +141,11 @@ export class ChatDirectoryService {
     }
   }
 
-  async addMessage(dto: AddMessageDto) {
+  async addMessage(dto: AddMessageDto, session: ClientSession) {
     try {
       await this.chatDirectoryRepository.query(
         `INSERT INTO chat_${dto.chatId} (message, authorEmail) VALUES ($1, $2)`,
-        [dto.message, dto.authorEmail],
+        [dto.message, session.userEmail],
       );
     } catch (error) {
       this.logger.error(`could not add message: ${stringifyError(error)}`);
@@ -163,7 +163,12 @@ export class ChatDirectoryService {
         [dto.newMessage, dto.messageId, session.userEmail],
       );
       if (affectedRows === 0) {
-        throw new Error('message does not exist');
+        this.logger.warn(
+          `user ${session.userEmail} probably accessed the API directly`,
+        );
+        throw new Error(
+          'message does not exist or you tried to edit a message that is not yours',
+        );
       }
     } catch (error) {
       this.logger.error(`could not edit message: ${stringifyError(error)}`);
@@ -181,7 +186,12 @@ export class ChatDirectoryService {
         [dto.messageId, session.userEmail],
       );
       if (affectedRows === 0) {
-        throw new Error('message does not exist');
+        this.logger.warn(
+          `user ${session.userEmail} probably accessed the API directly`,
+        );
+        throw new Error(
+          'message does not exist or you tried to delete a message that is not yours',
+        );
       }
     } catch (error) {
       this.logger.error(`could not delete message: ${stringifyError(error)}`);
