@@ -32,6 +32,7 @@ async function bootstrap() {
       scheme: '',
       description: 'Signed cookie that holds the sessionId of the current user',
     })
+    .addTag('chat')
     .build();
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,

@@ -25,12 +25,14 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
 } from '@nestjs/swagger';
 
 @ApiCookieAuth()
+@ApiTags('chat')
 @Controller('chatDirectory')
 export class ChatDirectoryController {
-  constructor(private readonly chatDirectoryService: ChatDirectoryService) {}
+  constructor(private readonly chatDirectoryService: ChatDirectoryService) { }
 
   @ApiOperation({ summary: 'Creates a chat with another onroad user' })
   @ApiCreatedResponse({
