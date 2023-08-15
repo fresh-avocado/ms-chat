@@ -11,7 +11,9 @@ import { ClientSession } from 'src/redis/types/session.type';
 import { AddMessageDto } from 'src/chat-directory/dtos/add-message.dto';
 import { EditMessageDto } from 'src/chat-directory/dtos/edit-message.dto';
 import { DeleteMessageDto } from 'src/chat-directory/dtos/delete-message.dto';
+import { ApiCookieAuth } from '@nestjs/swagger';
 
+@ApiCookieAuth()
 @WebSocketGateway({
   cors: {
     origin: '*',
