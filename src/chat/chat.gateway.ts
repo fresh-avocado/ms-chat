@@ -23,7 +23,7 @@ import { ApiCookieAuth } from '@nestjs/swagger';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(ChatGateway.name);
 
-  constructor(private readonly chatDirectoryService: ChatDirectoryService) { }
+  constructor(private readonly chatDirectoryService: ChatDirectoryService) {}
 
   async handleConnection(socket: Socket) {
     const clientSession = socket.request['session'] as ClientSession;

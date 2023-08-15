@@ -24,13 +24,15 @@ import {
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 
 @ApiCookieAuth()
 @Controller('chatDirectory')
 export class ChatDirectoryController {
-  constructor(private readonly chatDirectoryService: ChatDirectoryService) { }
+  constructor(private readonly chatDirectoryService: ChatDirectoryService) {}
 
+  @ApiOperation({ summary: 'Creates a chat with another onroad user' })
   @ApiCreatedResponse({
     description: 'The chat between both users was created successfully',
   })
@@ -48,6 +50,7 @@ export class ChatDirectoryController {
     );
   }
 
+  @ApiOperation({ summary: 'Gets chats the current user has' })
   @ApiOkResponse({ description: 'Chats for the current user were returned' })
   @AllowedUserType('onroad')
   @UseGuards(AuthGuard)
@@ -59,6 +62,7 @@ export class ChatDirectoryController {
     return await this.chatDirectoryService.getChats(req.session.userEmail);
   }
 
+  @ApiOperation({ summary: 'Gets the messages of the requested chat' })
   @ApiCreatedResponse({
     description: 'The messages of the requested chat were returned',
   })
@@ -70,6 +74,7 @@ export class ChatDirectoryController {
     return await this.chatDirectoryService.getChat(dto.chatId);
   }
 
+  @ApiOperation({ summary: 'Adds a message to a chat' })
   @ApiCreatedResponse({
     description: 'The message has been added to the chat',
   })
@@ -84,6 +89,7 @@ export class ChatDirectoryController {
     return await this.chatDirectoryService.addMessage(dto, req.session);
   }
 
+  @ApiOperation({ summary: 'Edits a message in a chat' })
   @ApiCreatedResponse({
     description: 'The message has been edited',
   })
@@ -98,6 +104,7 @@ export class ChatDirectoryController {
     return await this.chatDirectoryService.editMessage(dto, req.session);
   }
 
+  @ApiOperation({ summary: 'Deletes a message in a chat' })
   @ApiCreatedResponse({
     description: 'The message has been deleted',
   })

@@ -23,12 +23,13 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('ms-chat')
     .setDescription(
-      'Maneja todo relacionado a los chats entre los usuarios de tipo admin (onroad)',
+      'Maneja todo relacionado a los chats entre los usuarios de tipo admin (**onroad**). Tiene un componente con WebSockets que lamentablemente Swagger con Nest no soporta.',
     )
     .setVersion('1.0')
     .addCookieAuth('sessionId', {
       type: 'http',
-      in: 'Header',
+      in: 'HTTP Header',
+      scheme: '',
       description: 'Signed cookie that holds the sessionId of the current user',
     })
     .build();
